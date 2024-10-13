@@ -14,7 +14,7 @@ def printlogo():
  "        |_|\_(_)___(_) |_|    |_|   \___/  \____| \____| \___| \__||_| \___/ |_| |_||___/        ",
  "                                                                                                 ",
  "                                                                                                 ",
- "                      --------------- made by Kellerossel ---------------                      "
+ "                      --------------- made by Kellerossel, updated by MeltingDiamond ---------------                      "
         ]
     for line in Logo:
         print(line)
