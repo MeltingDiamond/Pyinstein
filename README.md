@@ -14,4 +14,6 @@ Before you start make sure you have a standard installation of python 3.x and ma
 
 You have now edited a bibite brain by writing/modifying a couple of python lines
 
-If I continue this I will add support for editing genes
+Known missing features:
+* Outputs with biases can't bee seen/edited for 0.6.0.1 and newer
+* No gene viewing/editing support
