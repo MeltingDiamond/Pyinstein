@@ -5,10 +5,7 @@ script_dir = Path(__file__).parent.absolute()
 
 data = {}
 
-save_functions_str = """from save_bb import new_conn, get_bibite_data, write
-from pathlib import Path
-
-script_dir = Path(__file__).parent.absolute()
+save_functions_str = """from save_bb import new_conn, get_bibite_data, save_genes, write # Do not remove this line
 
 # new_conn is structured like this
 \'\'\'
@@ -18,9 +15,7 @@ new_conn(Inov, NodeIn, NodeOut, WEIGHT, En):
     "NodeOut": NodeOut,
     "Weight": WEIGHT,
     "En": En}
-\'\'\'
-
-"""
+\'\'\'"""
 
 def printlogo():
     Logo = [   
@@ -31,7 +26,7 @@ def printlogo():
  "        |_|\_(_)___(_) |_|    |_|   \___/  \____| \____| \___| \__||_| \___/ |_| |_||___/        ",
  "                                                                                                 ",
  "                                                                                                 ",
- "                      --------------- made by Kellerossel, updated by MeltingDiamond ---------------                      \n"
+ "          --------------- made by Kellerossel, updated by MeltingDiamond ---------------                      \n"
         ]
     for line in Logo:
         print(line)
@@ -63,7 +58,13 @@ def get_bibite_node_names():
 
     return Node_names
 
-def convert_bibite_brain():
+def get_bibite_genes():
+    global data
+    genes = data["genes"]["genes"]
+
+    return genes
+
+def convert_bibite_brain(): # Converts the brain into a format that you can edit
     global data
 
     node_lookup = {node["Index"]: node["Desc"] for node in data["brain"]["Nodes"]}
@@ -81,25 +82,54 @@ def convert_bibite_brain():
     
     return converted_brain
 
+def generate_edit_brain_py():
+    version = get_version()
+
+    node_names = get_bibite_node_names()
+    node_names_string = ', '.join(f"\n'{name}'" for name in node_names)
+
+    genes = get_bibite_genes()
+    genes_string = ',\n    '.join(f'"{key}": {value}' for key, value in genes.items())
+
+    converted_brain_string = ("# Import functions used when saving\n"
+                              f"{save_functions_str}\n\n"
+                              f"Names_of_nodes = [{node_names_string}]\n\n"
+                              f"version = '{version}' # The version of the bibite the brain is extracted from\n\n"
+                              "# Each line below is used when saving the brain.\n# Line starting with new_conn is a synapse connection and can safely be added/removed\n"
+                              "get_bibite_data() # Do not remove this line\n\n"
+                              f"# Here you edit genes\ngenes = {{\n    {genes_string}\n}}\n\n"
+                              "# Here you edit the brain\n")
+    
+    for Synapse in converted_brain["Synapses"]:
+        converted_brain_string = f'{converted_brain_string}{Synapse}\n'
+
+    converted_brain_string = converted_brain_string + '\nsave_genes(genes) # Used to save genes\n\nwrite() # Writes the brain into the bibite file\nprint("Bibite saved, you can now load the bibite into the game")'
+
+    return converted_brain_string
+
 bibites = []
 for bibite in os.listdir(f'C:/Users/{os.getlogin()}/AppData/LocalLow/The Bibites/The Bibites/bibites'):
     if bibite.endswith(".bb8"):
         bibites.append(f'C:/Users/{os.getlogin()}/AppData/LocalLow/The Bibites/The Bibites/bibites/{bibite}')
 
-print("Number: Bibite:")
 bb8_number = None
+error = False # used to display error at the bottom of the bibites list
 while bb8_number is None:
     try:
+        print("Number:  Bibite:")
         for idx, bibite in enumerate(bibites):
-            print(f"{idx}       {os.path.basename(bibite)}")
-        user_input = input("\nType number for the bibite you want to edit\n\n")
+            print(f"{idx}        {os.path.basename(bibite)}")
+        if error:
+            print("\nPlease enter a valid integer.")
+        user_input = input(f"\nType a number between 0 and {len(bibites) - 1} for the bibite you want to edit:\n\n")
         bb8_number = int(user_input)
         # Check if the number is in the valid range of bibites
         if bb8_number < 0 or bb8_number >= len(bibites):
             print(f"Please enter a number between 0 and {len(bibites) - 1}")
             bb8_number = None  # Reset if out of range
+        error = False
     except ValueError:
-        print("Please enter a valid integer.\n")
+        error = True
 
 bibite_to_load = bibites[bb8_number]
 
@@ -111,13 +141,7 @@ converted_brain = convert_bibite_brain()
 if not os.path.isfile(f'{script_dir}/edit_brain.py'):
    open(f'{script_dir}/edit_brain.py', 'a').close()
 
-version = get_version()
-node_names = get_bibite_node_names()
-node_names_string = ', '.join(f"\n'{name}'" for name in node_names)
-converted_brain_string = "# Import functions used when saving\n" + f"{save_functions_str}Names_of_nodes = [{node_names_string}]\n\nversion = '{version}' # The version of the bibite the brain is extracted from\n# Each line below starting with new_conn is a synapse connection. Only stuff written here is in the brain\nget_bibite_data()\n"
-for Synapse in converted_brain["Synapses"]:
-    converted_brain_string = f'{converted_brain_string}{Synapse}\n'
-converted_brain_string = converted_brain_string + '\nwrite() # Write the brain into the bibite file\nprint("I haven\'t had that much sex")'
+converted_brain_string = generate_edit_brain_py()
 
 write(converted_brain_string, False, f'{script_dir}/edit_brain.py')
 

@@ -4,7 +4,8 @@ from pathlib import Path
 script_dir = Path(__file__).parent.absolute()
 data = {}
 bibite_name = ""
-supported_version = ["0.5.1","0.6.0.1"]
+# All versions can be loaded, but these are the ones I know work.
+supported_version = ["0.5.1","0.6.0.1"] # Currently not used for other than showing the user which are supported
 
 def get_bibite_data():
     global data, bibite_name
@@ -60,3 +61,6 @@ def new_conn(Inov, IN, OUT, WEIGHT, En):
         "Weight": WEIGHT,
         "En": En
       })
+
+def save_genes(genes):
+    data["genes"]["genes"] = genes
