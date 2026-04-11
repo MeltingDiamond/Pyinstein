@@ -1,4 +1,4 @@
-import json, os
+import json, os, platform
 from pathlib import Path
 
 script_dir = Path(__file__).parent.absolute()
@@ -9,10 +9,23 @@ supported_version = ["0.5.1","0.6.0.1"] # Currently not used for other than show
 
 def get_bibite_data():
     global data, bibite_name
+
+    os_map = {
+    "Windows": "Windows",
+    "Darwin": "Mac",
+    "Linux": "Linux"
+    }
+    OS_TYPE = os_map.get(platform.system(), "Unknown")
+
     bibites = []
-    for bibite in os.listdir(f'C:/Users/{os.getlogin()}/AppData/LocalLow/The Bibites/The Bibites/bibites'):
-        if bibite.endswith(".bb8"):
-            bibites.append(f'C:/Users/{os.getlogin()}/AppData/LocalLow/The Bibites/The Bibites/bibites/{bibite}')
+    if OS_TYPE == "Windows":
+        for bibite in os.listdir(f'{os.environ['USERPROFILE']}/AppData/LocalLow/The Bibites/The Bibites/bibites'):
+            if bibite.endswith(".bb8"):
+               bibites.append(f'{os.environ['USERPROFILE']}/AppData/LocalLow/The Bibites/The Bibites/bibites/{bibite}')
+    elif OS_TYPE == "Linux":
+        for bibite in os.listdir(f'{os.environ['HOME']}/.config/unity3d/The Bibites/The Bibites/Bibites'):
+            if bibite.endswith(".bb8"):
+               bibites.append(f'{os.environ['HOME']}/.config/unity3d/The Bibites/The Bibites/Bibites/{bibite}')
 
     bb8_number = None
     while bb8_number is None:
