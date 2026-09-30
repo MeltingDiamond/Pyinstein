@@ -1,11 +1,18 @@
-import json, os
+import json, os, platform
 from pathlib import Path
 
 script_dir = Path(__file__).parent.absolute()
 
+os_map = {
+    "Windows": "Windows",
+    "Darwin": "Mac",
+    "Linux": "Linux"
+    }
+OS_TYPE = os_map.get(platform.system(), "Unknown")
+
 data = {}
 
-save_functions_str = """from save_bb import new_conn, get_bibite_data, save_genes, write # Do not remove this line
+save_functions_str = """from save_bb import Node, new_conn, save_to_version, get_bibite_data, save_genes, save_nodes, write # Do not remove this line
 
 # new_conn is structured like this
 \'\'\'
@@ -49,14 +56,35 @@ def get_version():
     global data
     return data["version"]
 
+def node(Type, baseActivation, TypeName, Index, Inov, Desc, Value, archetype):
+    return {
+        "Type": Type,
+        "baseActivation": baseActivation,
+        "TypeName": TypeName,
+        "Index": Index,
+        "Inov": Inov,
+        "Desc": Desc,
+        "Value": Value,
+        "LastInput": 0.0,
+        "LastOutput": 0.0,
+        "archetype": archetype
+        }
+
 def get_bibite_node_names():
     global data
-    Node_names = []
+    Node_inputs = []
+    Node_outputs = []
+    Node_hidden = []
     for Node in data["brain"]["Nodes"]:
         desc = Node["Desc"]
-        Node_names.append(f"{desc}")
+        if Node["archetype"] == 0:
+            Node_inputs.append(f'Node({desc}, {Node["Value"]})')
+        elif Node["archetype"] == 1:
+            Node_outputs.append(str(desc))
+        else:
+            Node_hidden.append(f"{desc}: {Node["TypeName"]}")
 
-    return Node_names
+    return Node_inputs, Node_outputs, Node_hidden
 
 def get_bibite_genes():
     global data
@@ -72,12 +100,12 @@ def convert_bibite_brain(): # Converts the brain into a format that you can edit
     converted_brain = data["brain"]
     for idx, Synapse in enumerate(data["brain"]["Synapses"]):
         
-        NodeIn = node_lookup.get(Synapse["NodeIn"], Synapse["NodeIn"])
-        NodeOut = node_lookup.get(Synapse["NodeOut"], Synapse["NodeOut"])
+        NodeIn = node_lookup.get(Synapse["NodeIn"]) + str(Synapse["NodeIn"])
+        NodeOut = node_lookup.get(Synapse["NodeOut"]) + str(Synapse["NodeOut"])
         Weight = Synapse["Weight"]
         En = Synapse["En"]
         Inov = Synapse['Inov']
-        Synapse = f"new_conn({Inov}, \'{NodeIn}\', \'{NodeOut}\', {Weight}, {En})"
+        Synapse = f"new_conn({Inov}, {NodeIn}.Index, {NodeOut}.Index, {Weight}, {En})"
         converted_brain["Synapses"][idx] = Synapse
     
     return converted_brain
@@ -85,32 +113,39 @@ def convert_bibite_brain(): # Converts the brain into a format that you can edit
 def generate_edit_brain_py():
     version = get_version()
 
-    node_names = get_bibite_node_names()
-    node_names_string = ', '.join(f"\n'{name}'" for name in node_names)
-
     genes = get_bibite_genes()
     genes_string = ',\n    '.join(f'"{key}": {value}' for key, value in genes.items())
 
     converted_brain_string = ("# Import functions used when saving\n"
                               f"{save_functions_str}\n\n"
-                              f"Names_of_nodes = [{node_names_string}]\n\n"
-                              f"version = '{version}' # The version of the bibite the brain is extracted from\n\n"
+                              f"version = '{version}' # The version of the bibites the brain is extracted from\n"
+                              f"save_to_version('{version}') # The version you want to save to\n\n"
                               "# Each line below is used when saving the brain.\n# Line starting with new_conn is a synapse connection and can safely be added/removed\n"
                               "get_bibite_data() # Do not remove this line\n\n"
                               f"# Here you edit genes\ngenes = {{\n    {genes_string}\n}}\n\n"
                               "# Here you edit the brain\n")
     
+    for Node in data["brain"]["Nodes"]:
+        converted_brain_string = f'{converted_brain_string}{Node["Desc"]}{Node["Index"]} = Node({Node["Type"]}, {Node["baseActivation"]}, "{Node["TypeName"]}", {Node["Index"]}, {Node["Inov"]}, "{Node["Desc"]}", {Node["Value"]}, {Node["archetype"]})\n'
+    
+    converted_brain_string += "\n"
+    
     for Synapse in converted_brain["Synapses"]:
         converted_brain_string = f'{converted_brain_string}{Synapse}\n'
 
-    converted_brain_string = converted_brain_string + '\nsave_genes(genes) # Used to save genes\n\nwrite() # Writes the brain into the bibite file\nprint("Bibite saved, you can now load the bibite into the game")'
+    converted_brain_string = converted_brain_string + '\nsave_genes(genes) # Used to save genes\nsave_nodes() # Used to save Nodes\n\nwrite() # Writes the brain into the bibite file\nprint("Bibite saved, you can now load the bibite into the game")'
 
     return converted_brain_string
 
 bibites = []
-for bibite in os.listdir(f'C:/Users/{os.getlogin()}/AppData/LocalLow/The Bibites/The Bibites/bibites'):
-    if bibite.endswith(".bb8"):
-        bibites.append(f'C:/Users/{os.getlogin()}/AppData/LocalLow/The Bibites/The Bibites/bibites/{bibite}')
+if OS_TYPE == "Windows":
+    for bibite in os.listdir(f'{os.environ['USERPROFILE']}/AppData/LocalLow/The Bibites/The Bibites/bibites'):
+        if bibite.endswith(".bb8"):
+            bibites.append(f'{os.environ['USERPROFILE']}/AppData/LocalLow/The Bibites/The Bibites/bibites/{bibite}')
+elif OS_TYPE == "Linux":
+    for bibite in os.listdir(f'{os.environ['HOME']}/.config/unity3d/The Bibites/The Bibites/Bibites'):
+        if bibite.endswith(".bb8"):
+            bibites.append(f'{os.environ['HOME']}/.config/unity3d/The Bibites/The Bibites/Bibites/{bibite}')
 
 bb8_number = None
 error = False # used to display error at the bottom of the bibites list

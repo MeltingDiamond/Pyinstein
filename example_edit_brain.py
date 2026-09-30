@@ -1,5 +1,5 @@
 # Import functions used when saving
-from save_bb import new_conn, get_bibite_data, save_genes, write # Do not remove this line
+from save_bb import Node, new_conn, save_to_version, get_bibite_data, save_genes, save_nodes, write # Do not remove this line
 
 # new_conn is structured like this
 '''
@@ -11,59 +11,8 @@ new_conn(Inov, NodeIn, NodeOut, WEIGHT, En):
     "En": En}
 '''
 
-Names_of_nodes = [
-'EnergyRatio', 
-'Maturity', 
-'LifeRatio', 
-'Fullness', 
-'Speed', 
-'IsGrabbing', 
-'AttackedDamage', 
-'EggStored', 
-'BibiteCloseness', 
-'BibiteAngle', 
-'NBibites', 
-'PlantCloseness', 
-'PlantAngle', 
-'NPlants', 
-'MeatCloseness', 
-'MeatAngle', 
-'NMeats', 
-'RedBibite', 
-'GreenBibite', 
-'BlueBibite', 
-'Tic', 
-'Minute', 
-'TimeAlive', 
-'PheroSense1', 
-'PheroSense2', 
-'PheroSense3', 
-'Phero1Angle', 
-'Phero2Angle', 
-'Phero3Angle', 
-'Phero1Heading', 
-'Phero2Heading', 
-'Phero3Heading', 
-'Accelerate', 
-'Rotate', 
-'Herding', 
-'EggProduction', 
-'Want2Lay', 
-'Want2Eat', 
-'Digestion', 
-'Grab', 
-'ClkReset', 
-'PhereOut1', 
-'PhereOut2', 
-'PhereOut3', 
-'Want2Grow', 
-'Want2Heal', 
-'Want2Attack', 
-'Hidden0', 
-'Hidden1', 
-'Hidden2']
-
-version = '0.6.0.1' # The version of the bibite the brain is extracted from
+version = '0.6.3.1' # The version of the bibites the brain is extracted from
+save_to_version('0.6.3.1') # The version you want to save to
 
 # Each line below is used when saving the brain.
 # Line starting with new_conn is a synapse connection and can safely be added/removed
@@ -71,72 +20,121 @@ get_bibite_data() # Do not remove this line
 
 # Here you edit genes
 genes = {
-    "LayTime": 26.9825573,
-    "BroodTime": 26.17411,
-    "HatchTime": 13.6014757,
-    "SizeRatio": 1.051581,
-    "SpeedRatio": 0.974236667,
-    "ColorR": 0.7132759,
-    "ColorG": 0.7179152,
-    "ColorB": 0.171787515,
-    "MutationAmountSigma": 0.004333486,
-    "AverageMutationNumber": 1.74831951,
-    "BrainMutationSigma": 0.143025443,
-    "BrainAverageMutation": 0.0760994256,
-    "ViewAngle": 227.7185,
-    "ViewRadius": 200.0,
-    "ClockSpeed": 0.388975918,
-    "PheroSense": 153.804382,
-    "Diet": 0.5,
-    "HerdSeparationWeight": 0.110408947,
-    "HerdAlignmentWeight": 2.616617,
-    "HerdCohesionWeight": 0.5664832,
-    "HerdVelocityWeight": 0.0199187789,
-    "HerdSeparationDistance": 75.06252,
-    "GrowthScale": 0.3378411,
-    "GrowthMaturityFactor": 2.91788387,
-    "GrowthMaturityExponent": 0.326139331,
-    "EyeOffset": 0.308237761,
-    "StomachWAG": 3.01193285,
-    "WombWAG": 2.50836968,
-    "FatWAG": 2.8164134,
-    "ArmorWAG": 1.22840238,
-    "ThroatWAG": 2.394422,
-    "MouthMusclesWAG": 1.44758451,
-    "MoveMusclesWAG": 1.56330657,
-    "FatStorageThreshold": 0.6923864,
-    "FatStorageDeadband": 0.172810227
+    "LayTime": 15.5148859,
+    "BroodTime": 35.0,
+    "HatchTime": 19.0,
+    "SizeRatio": 1.27901471,
+    "SpeedRatio": 1.26616788,
+    "ColorR": 0.753119051,
+    "ColorG": 0.104958311,
+    "ColorB": 0.256386817,
+    "MutationAmountSigma": 0.121800646,
+    "AverageMutationNumber": 1.0,
+    "BrainMutationSigma": 0.15,
+    "BrainAverageMutation": 0.9880969,
+    "ViewAngle": 256.934265,
+    "ViewRadius": 50.87593,
+    "ClockSpeed": 1.0,
+    "PheroSense": 150.0,
+    "Diet": 0.9102195,
+    "HerdSeparationWeight": 0.0557917356,
+    "HerdAlignmentWeight": 0.0895292461,
+    "HerdCohesionWeight": 1.75,
+    "HerdVelocityWeight": 0.15,
+    "HerdSeparationDistance": 35.0,
+    "GrowthScale": 0.75543,
+    "GrowthMaturityFactor": 3.43867,
+    "GrowthMaturityExponent": 2.0,
+    "EyeOffset": 0.5,
+    "StomachWAG": 5.0,
+    "WombWAG": 2.5,
+    "FatWAG": 2.5,
+    "ArmorWAG": 0.249004,
+    "ThroatWAG": 1.2201196,
+    "MouthMusclesWAG": 0.122011952,
+    "MoveMusclesWAG": 0.6100598,
+    "FatStorageThreshold": 0.5,
+    "FatStorageDeadband": 0.25
 }
 
 # Here you edit the brain
-new_conn(4, 'MeatAngle', 'Rotate', 0.8730221, True)
-new_conn(29, 'PlantAngle', 'Rotate', -0.2, True)
-new_conn(5, 'NMeats', 'PhereOut3', -0.12781474, True)
-new_conn(6, 'AttackedDamage', 'Grab', -0.1470481, True)
-new_conn(7, 'Maturity', 'Want2Attack', 1.00656378, True)
-new_conn(8, 'AttackedDamage', 'Accelerate', 0.209885091, False)
-new_conn(9, 'Fullness', 'Accelerate', -1.01169658, True)
-new_conn(10, 'Phero3Angle', 'Accelerate', -0.5216525, True)
-new_conn(11, 'MeatCloseness', 'Want2Grow', 1.25412524, True)
-new_conn(12, 'RedBibite', 'EggProduction', 0.374998361, True)
-new_conn(13, 'NBibites', 'PhereOut2', -0.522816539, True)
-new_conn(14, 'PlantCloseness', 'Want2Grow', -0.164204746, True)
-new_conn(15, 'Speed', 'EggProduction', -0.23829475, True)
-new_conn(16, 'PheroSense3', 'Want2Eat', -0.184197873, False)
-new_conn(17, 'LifeRatio', 'Want2Grow', 0.163160533, True)
-new_conn(18, 'MeatCloseness', 'Hidden0', 0.210803315, True)
-new_conn(19, 'Hidden0', 'EggProduction', 0.946124, True)
-new_conn(20, 'EggStored', 'Hidden0', -0.6268739, True)
-new_conn(21, 'EnergyRatio', 'Want2Attack', 1.63698912, True)
-new_conn(22, 'AttackedDamage', 'Hidden1', 0.28378737, True)
-new_conn(23, 'Hidden1', 'Accelerate', 1.0, True)
-new_conn(24, 'Hidden1', 'Want2Attack', 0.514022946, True)
-new_conn(25, 'MeatCloseness', 'Grab', 0.2181158, True)
-new_conn(26, 'PheroSense3', 'Hidden2', -0.184197873, True)
-new_conn(27, 'Hidden2', 'Want2Eat', 1.0, True)
-new_conn(28, 'Phero2Heading', 'Want2Heal', -0.0524244, True)
+EnergyRatio0 = Node(0, 0.0, "Input", 0, 1, "EnergyRatio", 0.9865625, 0)
+Maturity1 = Node(0, 0.0, "Input", 1, 2, "Maturity", 1.43854868, 0)
+LifeRatio2 = Node(0, 0.0, "Input", 2, 3, "LifeRatio", 1.0, 0)
+Fullness3 = Node(0, 0.0, "Input", 3, 4, "Fullness", 0.0, 0)
+Speed4 = Node(0, 0.0, "Input", 4, 5, "Speed", 0.3477938, 0)
+RotationSpeed5 = Node(0, 0.0, "Input", 5, 6, "RotationSpeed", 0.007905218, 0)
+IsGrabbing6 = Node(0, 0.0, "Input", 6, 7, "IsGrabbing", 0.0, 0)
+AttackedDamage7 = Node(0, 0.0, "Input", 7, 8, "AttackedDamage", 0.0, 0)
+EggStored8 = Node(0, 0.0, "Input", 8, 9, "EggStored", 0.0, 0)
+BibiteCloseness9 = Node(0, 0.0, "Input", 9, 10, "BibiteCloseness", 0.0, 0)
+BibiteAngle10 = Node(0, 0.0, "Input", 10, 11, "BibiteAngle", 0.0, 0)
+NBibites11 = Node(0, 0.0, "Input", 11, 12, "NBibites", 0.0, 0)
+PlantCloseness12 = Node(0, 0.0, "Input", 12, 13, "PlantCloseness", 0.0, 0)
+PlantAngle13 = Node(0, 0.0, "Input", 13, 14, "PlantAngle", 0.0, 0)
+NPlants14 = Node(0, 0.0, "Input", 14, 15, "NPlants", 0.0, 0)
+MeatCloseness15 = Node(0, 0.0, "Input", 15, 16, "MeatCloseness", 0.0, 0)
+MeatAngle16 = Node(0, 0.0, "Input", 16, 17, "MeatAngle", 0.0, 0)
+NMeats17 = Node(0, 0.0, "Input", 17, 18, "NMeats", 0.0, 0)
+RedBibite18 = Node(0, 0.0, "Input", 18, 19, "RedBibite", 0.0, 0)
+GreenBibite19 = Node(0, 0.0, "Input", 19, 20, "GreenBibite", 0.0, 0)
+BlueBibite20 = Node(0, 0.0, "Input", 20, 21, "BlueBibite", 0.0, 0)
+Tic21 = Node(0, 0.0, "Input", 21, 22, "Tic", 0.0, 0)
+Minute22 = Node(0, 0.0, "Input", 22, 23, "Minute", 0.00416666735, 0)
+TimeAlive23 = Node(0, 0.0, "Input", 23, 24, "TimeAlive", 0.00416666735, 0)
+PheroSense124 = Node(0, 0.0, "Input", 24, 25, "PheroSense1", 0.0, 0)
+PheroSense225 = Node(0, 0.0, "Input", 25, 26, "PheroSense2", 0.0, 0)
+PheroSense326 = Node(0, 0.0, "Input", 26, 27, "PheroSense3", 0.0, 0)
+Phero1Angle27 = Node(0, 0.0, "Input", 27, 28, "Phero1Angle", 0.0, 0)
+Phero2Angle28 = Node(0, 0.0, "Input", 28, 29, "Phero2Angle", 0.0, 0)
+Phero3Angle29 = Node(0, 0.0, "Input", 29, 30, "Phero3Angle", 0.0, 0)
+Phero1Heading30 = Node(0, 0.0, "Input", 30, 31, "Phero1Heading", 0.0, 0)
+Phero2Heading31 = Node(0, 0.0, "Input", 31, 32, "Phero2Heading", 0.0, 0)
+Phero3Heading32 = Node(0, 0.0, "Input", 32, 33, "Phero3Heading", 0.0, 0)
+Accelerate33 = Node(3, 0.03611282, "TanH", 33, 34, "Accelerate", 0.5459295, 1)
+Rotate34 = Node(3, 0.07611282, "TanH", 34, 35, "Rotate", 0.07596619, 1)
+Herding35 = Node(3, 0.0, "TanH", 35, 36, "Herding", 0.0, 1)
+EggProduction36 = Node(3, 0.2, "TanH", 36, 37, "EggProduction", 0.197375327, 1)
+Want2Lay37 = Node(1, 0.0, "Sigmoid", 37, 38, "Want2Lay", 0.5, 1)
+Want2Eat38 = Node(3, -1.11538947, "TanH", 38, 39, "Want2Eat", -0.8059592, 1)
+Digestion39 = Node(1, 0.0, "Sigmoid", 39, 40, "Digestion", 0.275819123, 1)
+Grab40 = Node(3, 0.0, "TanH", 40, 41, "Grab", 0.0, 1)
+ClkReset41 = Node(1, 0.0, "Sigmoid", 41, 42, "ClkReset", 0.5, 1)
+PhereOut142 = Node(5, 0.0, "ReLu", 42, 43, "PhereOut1", 0.0, 1)
+PhereOut243 = Node(5, 0.0, "ReLu", 43, 44, "PhereOut2", 0.0, 1)
+PhereOut344 = Node(5, 0.0, "ReLu", 44, 45, "PhereOut3", 0.0, 1)
+Want2Grow45 = Node(1, -1.98611271, "Sigmoid", 45, 46, "Want2Grow", 0.6960583, 1)
+Want2Heal46 = Node(1, 0.0, "Sigmoid", 46, 47, "Want2Heal", 0.5, 1)
+Want2Attack47 = Node(1, 0.0, "Sigmoid", 47, 48, "Want2Attack", 0.5, 1)
+Hidden048 = Node(5, 0.0, "ReLu", 48, 49, "Hidden0", 0.399999976, 2)
+Hidden149 = Node(6, 0.0, "Gaussian", 49, 50, "Hidden1", 1.0, 2)
+Hidden350 = Node(6, 0.0, "Gaussian", 50, 52, "Hidden3", 1.0, 2)
+
+new_conn(76, PlantAngle13.Index, Accelerate33.Index, 0.03611282, False)
+new_conn(77, BibiteCloseness9.Index, Rotate34.Index, 0.07611282, False)
+new_conn(78, PlantAngle13.Index, Rotate34.Index, 0.07611282, True)
+new_conn(79, BibiteCloseness9.Index, Hidden048.Index, -1.21368527, True)
+new_conn(80, BibiteCloseness9.Index, Want2Attack47.Index, 2.746853, True)
+new_conn(81, Hidden149.Index, Hidden048.Index, 1.34611285, True)
+new_conn(82, Hidden350.Index, Hidden048.Index, -0.9461129, True)
+new_conn(83, Hidden048.Index, Accelerate33.Index, 1.44112825, True)
+new_conn(84, MeatCloseness15.Index, Hidden048.Index, -1.1461128, True)
+new_conn(85, BibiteAngle10.Index, Hidden149.Index, -2.84611273, True)
+new_conn(86, NBibites11.Index, Hidden350.Index, -6.456113, True)
+new_conn(87, EnergyRatio0.Index, Want2Grow45.Index, 2.84611273, True)
+new_conn(88, PlantCloseness12.Index, Want2Grow45.Index, -1.98611271, False)
+new_conn(89, BibiteAngle10.Index, Rotate34.Index, 1.25685859, True)
+new_conn(90, MeatAngle16.Index, Rotate34.Index, 0.7568586, True)
+new_conn(91, AttackedDamage7.Index, Accelerate33.Index, 2.57611275, True)
+new_conn(92, PlantCloseness12.Index, Want2Eat38.Index, -2.34338951, True)
+new_conn(93, MeatCloseness15.Index, Want2Eat38.Index, 3.94611287, True)
+new_conn(94, Maturity1.Index, Digestion39.Index, -0.1809116, True)
+new_conn(95, EnergyRatio0.Index, Digestion39.Index, -0.7129116, True)
+new_conn(96, PlantAngle13.Index, Want2Eat38.Index, -2.34338951, False)
+new_conn(97, PheroSense225.Index, Want2Attack47.Index, 0.800588548, True)
 
 save_genes(genes) # Used to save genes
+save_nodes() # Used to save Nodes
 
 write() # Writes the brain into the bibite file
 print("Bibite saved, you can now load the bibite into the game")

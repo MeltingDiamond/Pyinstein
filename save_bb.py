@@ -2,10 +2,18 @@ import json, os, platform
 from pathlib import Path
 
 script_dir = Path(__file__).parent.absolute()
+nodes = []
 data = {}
 bibite_name = ""
+bibite_version = ""
 # All versions can be loaded, but these are the ones I know work.
-supported_version = ["0.5.1","0.6.0.1"] # Currently not used for other than showing the user which are supported
+# Currently not used for anything other than showing the user which are supported
+old_supported_version = ["0.5.1","0.6.0.1"] # Old list of supported versions
+supported_versions = ["0.6.3.1"] # As of September 29 2026 this is the list of supported versions. Anything from the old list is no longer known if it works
+
+def save_to_version(version):
+    global bibite_version
+    bibite_version = version
 
 def get_bibite_data():
     global data, bibite_name
@@ -44,12 +52,46 @@ def get_bibite_data():
     bibite_name = bibites[bb8_number]
     with open(bibite_name, 'r') as file:
         ddict = json.load(file)
+        ddict["genes"]["genes"] = []
+        ddict["brain"]["Nodes"] = []
+        ddict["brain"]["Synapses"] = []
     data = dict(ddict)
 
 def write():
     global data, bibite_name
     with open(bibite_name, 'w') as file:
         json.dump(data, file, indent=4)
+
+class Node:
+    def __init__(self, Type, baseActivation, TypeName, Index, Inov, Desc, Value, archetype):
+        self.Type = Type
+        self.baseActivation = baseActivation
+        self.TypeName = TypeName
+        self.Index = Index
+        self.Inov = Inov
+        self.Desc = Desc
+        self.Value = Value
+        self.LastInput = 0.0
+        self.LastOutput = 0.0
+        self.archetype = archetype
+        
+        global nodes
+        nodes.append(self)
+   
+    def write(self): # I don't know how to use this
+        # json as above with all the hidden junk
+        return {
+                "Type": self.Type,
+                "baseActivation": self.baseActivation,
+                "TypeName": self.TypeName,
+                "Index": self.Index,
+                "Inov": self.Inov,
+                "Desc": self.Desc,
+                "Value": self.Value,
+                "LastInput": 0.0,
+                "LastOutput": 0.0,
+                "archetype": self.archetype
+            }
 
 def new_conn(Inov, IN, OUT, WEIGHT, En):
     global data
@@ -77,3 +119,7 @@ def new_conn(Inov, IN, OUT, WEIGHT, En):
 
 def save_genes(genes):
     data["genes"]["genes"] = genes
+    
+def save_nodes():
+    converted_nodes = [node.write() for node in nodes]
+    data["brain"]["Nodes"] = converted_nodes
